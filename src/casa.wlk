@@ -1,11 +1,11 @@
 object casaDePepeYJulian {
 
 	var property porcentajeDeViveres = 50
-	var property montoParaReparaciones = 0
-	var property cuentaHogar = cuentaCorriente
-	var mantenimientoAsignado = minimoEIndispensable
-	var property calidadDeViveres = 0
 	const porcentajeMinimoDeViveres = 40
+	var calidadDeViveres = 0
+	var property montoParaReparaciones = 0
+	var cuentaHogar = cuentaCorriente
+	var estrategiaDeAhorro = minimoEIndispensable
 
 	method tieneViveresSuficientes() {
 		return porcentajeDeViveres >= porcentajeMinimoDeViveres
@@ -23,12 +23,12 @@ object casaDePepeYJulian {
 		montoParaReparaciones += monto
 	}
 
-	method cubrirGastos(monto) {
-		cuentaHogar.extraerDinero(monto)
+	method hacerMantenimiento() {
+		estrategiaDeAhorro.mantenimiento(self, calidadDeViveres)
 	}
 
-	method hacerMantenimiento() {
-		mantenimientoAsignado.mantenimiento(self, calidadDeViveres)
+	method cubrirGastos(monto) {
+		cuentaHogar.extraerDinero(monto)
 	}
 
 	method viveresFaltantes() {
@@ -47,8 +47,21 @@ object casaDePepeYJulian {
 		return cuentaHogar.saldo()
 	}
 
+	method estrategiaDeAhorro(_estrategiaDeAhorro) {
+		estrategiaDeAhorro = _estrategiaDeAhorro
+	}
+
+	method calidadDeViveres(_calidadDeViveres) {
+		calidadDeViveres = _calidadDeViveres
+	}
+
+	method cuentaHogar(_cuentaHogar) {
+		cuentaHogar = _cuentaHogar
+	}
+
 }
 
+//ESTRATEGIAS DE AHORRO 
 object minimoEIndispensable {
 
 	const porcentajeMinimoDeViveres = 40
@@ -71,10 +84,10 @@ object full {
 			casa.sumarAPorcentajeDeViveres(40)
 			casa.cubrirGastos(40 * calidadFull)
 		}
-		self.cubrirReparaciones(casa)
+		self.cubrirReparacionesSiSePuede(casa)
 	}
 
-	method cubrirReparaciones(casa) {
+	method cubrirReparacionesSiSePuede(casa) {
 		if (casa.saldoCuentaHogar() >= (casa.montoParaReparaciones() + 1000)) {
 			casa.cubrirGastos(casa.montoParaReparaciones())
 			casa.montoParaReparaciones(0)
@@ -83,6 +96,7 @@ object full {
 
 }
 
+//CUENTAS
 object cuentaCorriente {
 
 	var saldo = 0
@@ -126,8 +140,8 @@ object cuentaConGastos {
 
 object cuentaCombinada {
 
-	var property cuentaPrimaria = cuentaCorriente
-	var property cuentaSecundaria = cuentaConGastos
+	var cuentaPrimaria = cuentaCorriente
+	var cuentaSecundaria = cuentaConGastos
 
 	method saldo() {
 		return cuentaPrimaria.saldo() + cuentaSecundaria.saldo()
@@ -137,8 +151,16 @@ object cuentaCombinada {
 		cuentaPrimaria.depositarDinero(monto)
 	}
 
-	method extrearDinero(monto) {
+	method extraerDinero(monto) {
 		if (cuentaPrimaria.saldo() >= monto) cuentaPrimaria.extraerDinero(monto) else cuentaSecundaria.extraerDinero(monto)
+	}
+
+	method cuentaPrimaria(_cuentaPrimaria) {
+		cuentaPrimaria = _cuentaPrimaria
+	}
+
+	method cuentaSecundaria(_cuentaSecundaria) {
+		cuentaSecundaria = _cuentaSecundaria
 	}
 
 }
