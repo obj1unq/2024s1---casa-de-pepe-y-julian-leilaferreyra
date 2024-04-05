@@ -30,7 +30,7 @@ describe "Casa de Pepe y Julian." {
 	}
 
 	test "- La casa tiene 50% de los víveres.
-          - Necesita 100 pesos para reparaciones,
+          - Necesita 100 pesos para reparaciones.
           - Tiene asociada la cuenta corriente con 1000 pesos de saldo.
           - Una estrategia de ahorro _Full_.
           Al hacer un mantenimiento de la casa:

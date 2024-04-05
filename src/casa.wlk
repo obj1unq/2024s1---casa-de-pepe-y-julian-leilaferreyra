@@ -110,7 +110,7 @@ object full {
 
 }
 
-//CUENTAS
+//CUENTAS.
 object cuentaCorriente {
 
 	var saldo = 0
