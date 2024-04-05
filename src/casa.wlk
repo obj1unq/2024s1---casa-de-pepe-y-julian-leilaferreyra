@@ -31,14 +31,6 @@ object casaDePepeYJulian {
 		cuentaHogar.extraerDinero(monto)
 	}
 
-	method viveresFaltantes() {
-		return if (porcentajeDeViveres < porcentajeMinimoDeViveres) {
-			porcentajeMinimoDeViveres - porcentajeDeViveres
-		} else {
-			0
-		}
-	}
-
 	method sumarAPorcentajeDeViveres(cantidad) {
 		porcentajeDeViveres += cantidad
 	}
@@ -61,14 +53,18 @@ object casaDePepeYJulian {
 
 }
 
-//ESTRATEGIAS DE AHORRO 
+//ESTRATEGIAS DE AHORRO.
 object minimoEIndispensable {
 
 	const porcentajeMinimoDeViveres = 40
 
 	method mantenimiento(casa, calidad) {
-		casa.cubrirGastos(casa.viveresFaltantes() * calidad)
+		casa.cubrirGastos(self.viveresFaltantes(casa) * calidad)
 		casa.porcentajeDeViveres(porcentajeMinimoDeViveres)
+	}
+
+	method viveresFaltantes(casa) {
+		return porcentajeMinimoDeViveres - casa.porcentajeDeViveres()
 	}
 
 }
@@ -76,22 +72,40 @@ object minimoEIndispensable {
 object full {
 
 	const calidadFull = 5
+	const porcentajeMaximoDeViveres = 100
 
 	method mantenimiento(casa, calidad) {
+		self.mantenimientoDeViveresFull(casa)
+		self.cubrirReparacionesSiSePuede(casa)
+	}
+
+	method mantenimientoDeViveresFull(casa) {
 		if (casa.laCasaEstaEnOrden()) {
-			casa.porcentajeDeViveres(100)
+			casa.cubrirGastos(self.viveresFaltantes(casa) * calidadFull)
+			casa.porcentajeDeViveres(porcentajeMaximoDeViveres)
 		} else {
 			casa.sumarAPorcentajeDeViveres(40)
 			casa.cubrirGastos(40 * calidadFull)
 		}
-		self.cubrirReparacionesSiSePuede(casa)
 	}
 
 	method cubrirReparacionesSiSePuede(casa) {
-		if (casa.saldoCuentaHogar() >= (casa.montoParaReparaciones() + 1000)) {
-			casa.cubrirGastos(casa.montoParaReparaciones())
-			casa.montoParaReparaciones(0)
+		if (self.sePuedenHacerReparaciones(casa)) {
+			self.cubrirReparaciones(casa)
 		}
+	}
+
+	method cubrirReparaciones(casa) {
+		casa.cubrirGastos(casa.montoParaReparaciones())
+		casa.montoParaReparaciones(0)
+	}
+
+	method sePuedenHacerReparaciones(casa) {
+		return casa.saldoCuentaHogar() >= casa.montoParaReparaciones() + 1000
+	}
+
+	method viveresFaltantes(casa) {
+		return porcentajeMaximoDeViveres - casa.porcentajeDeViveres()
 	}
 
 }
@@ -152,7 +166,11 @@ object cuentaCombinada {
 	}
 
 	method extraerDinero(monto) {
-		if (cuentaPrimaria.saldo() >= monto) cuentaPrimaria.extraerDinero(monto) else cuentaSecundaria.extraerDinero(monto)
+		if (cuentaPrimaria.saldo() >= monto) {
+			cuentaPrimaria.extraerDinero(monto)
+		} else {
+			cuentaSecundaria.extraerDinero(monto)
+		}
 	}
 
 	method cuentaPrimaria(_cuentaPrimaria) {
