@@ -1,6 +1,6 @@
 import casa.*
 
-describe "Casa de Pepe y Julian" {
+describe "Casa de Pepe y Julian." {
 
 	test "Se rompe algo de 1000 pesos en la casa de Pepe y Julian" {
 		casaDePepeYJulian.romperAlgoDeValor(1000)
