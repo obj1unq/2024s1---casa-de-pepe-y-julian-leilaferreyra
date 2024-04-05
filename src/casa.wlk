@@ -1,6 +1,6 @@
 object casaDePepeYJulian {
 
-	var property porcentajeDeViveres = 50
+	var property porcentajeDeViveres = 0
 	const porcentajeMinimoDeViveres = 40
 	var calidadDeViveres = 0
 	var property montoParaReparaciones = 0
