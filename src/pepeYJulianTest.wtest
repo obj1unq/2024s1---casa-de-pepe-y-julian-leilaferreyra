@@ -1,0 +1,116 @@
+import casa.*
+
+describe "Casa de Pepe y Julian." {
+
+	test "Se rompe algo de 1000 pesos en la casa de Pepe y Julian." {
+		casaDePepeYJulian.romperAlgoDeValor(1000)
+		assert.that(casaDePepeYJulian.tieneViveresSuficientes())
+		assert.that(casaDePepeYJulian.hayQueHacerReparaciones())
+		assert.notThat(casaDePepeYJulian.laCasaEstaEnOrden())
+	}
+
+	test "- La cuenta primaria es la cuenta con gastos con 50 pesos de costo de operación 
+          - La cuenta secundaria es la cuenta corriente, ya con 500 pesos de saldo. 
+          - Se depositan 100 pesos en la cuenta combinada 
+            (van a la cuenta con gastos, porque es la primaria, depositándose 50 pesos efectivos). 
+          - Si se extraen 200 pesos (salen de la cuenta corriente, ya que a la primaria no le alcanza, 
+            dejándola en 300 pesos).
+
+          - Verificar que el saldo de la cuenta con gastos queda en 50 pesos, la cuenta corriente con 
+            300 pesos y la combindada con 350 pesos." {
+		cuentaCombinada.cuentaPrimaria(cuentaConGastos)
+		cuentaConGastos.costoPorOperacion(50)
+		cuentaCombinada.cuentaSecundaria(cuentaCorriente)
+		cuentaCorriente.depositarDinero(500)
+		cuentaCombinada.depositarDinero(100)
+		cuentaCombinada.extraerDinero(200)
+		assert.equals(50, cuentaConGastos.saldo())
+		assert.equals(300, cuentaCorriente.saldo())
+		assert.equals(350, cuentaCombinada.saldo())
+	}
+
+	test "- La casa tiene 50% de los víveres.
+          - Necesita 100 pesos para reparaciones.
+          - Tiene asociada la cuenta corriente con 1000 pesos de saldo.
+          - Una estrategia de ahorro _Full_.
+          Al hacer un mantenimiento de la casa:
+          - Como la casa no está en orden, aumenta 40% de sus víveres 
+            gastando `40 * 5 = 200` pesos.
+          - Si bien luego les alcanza para hacer las reparaciones, no sobrarían 1000 pesos, 
+            así que no se hacen.
+
+          - Verificar que la casa queda con 90% de víveres, mantiene los 100 pesos para reparaciones,
+            y la cuenta corriente queda con 800 pesos." {
+		casaDePepeYJulian.porcentajeDeViveres(50)
+		casaDePepeYJulian.montoParaReparaciones(100)
+		casaDePepeYJulian.cuentaHogar(cuentaCorriente)
+		cuentaCorriente.depositarDinero(1000)
+		casaDePepeYJulian.estrategiaDeAhorro(full)
+		casaDePepeYJulian.hacerMantenimiento()
+		assert.equals(90, casaDePepeYJulian.porcentajeDeViveres())
+		assert.equals(100, casaDePepeYJulian.montoParaReparaciones())
+		assert.equals(800, cuentaCorriente.saldo())
+	}
+	test "- La casa tiene 20% de los víveres.
+          - Necesita 200 pesos para reparaciones,
+          - Tiene asociada la cuenta con gastos que esta en 0 pesos de saldo. Deposita 1000 pesos con
+            un costo de extraccion de 50 pesos el saldo final de la cuenta queda en ´1000 - 50 = 950´ pesos.
+          - Una estrategia de ahorro minimoEIndispensable de calidad 2
+          Al hacer un mantenimiento de la casa:
+          - Como la casa no está en orden, hay que cubrir lo necesario para llegar al 
+            porcentaje minimo de viveres, gastando ´(40 - 20) * 2 = 40´pesos.
+
+          - Verificar que la casa queda con 40% de víveres, mantiene los 200 pesos para reparaciones,
+            y la cuenta corriente queda con 910 pesos." {
+		casaDePepeYJulian.porcentajeDeViveres(20)
+		casaDePepeYJulian.montoParaReparaciones(200)
+		casaDePepeYJulian.cuentaHogar(cuentaConGastos)
+		cuentaConGastos.costoPorOperacion(50)
+		cuentaConGastos.depositarDinero(1000)
+		casaDePepeYJulian.estrategiaDeAhorro(minimoEIndispensable)
+		casaDePepeYJulian.calidadDeViveres(2)
+		casaDePepeYJulian.hacerMantenimiento()
+		assert.equals(40, casaDePepeYJulian.porcentajeDeViveres())
+		assert.equals(200, casaDePepeYJulian.montoParaReparaciones())
+		assert.equals(910, cuentaConGastos.saldo())
+	}
+	test "- La casa tiene 60% de los víveres.
+          - Necesita 300 pesos para reparaciones.
+          - Tiene asociada la cuenta corriente con 3000 pesos de saldo.
+          - Una estrategia de ahorro _Full_.
+          Al hacer un mantenimiento de la casa:
+          - Como la casa no está en orden, aumenta 40% de sus víveres 
+            gastando `40 * 5 = 200` pesos.
+
+          - Verificar que la casa queda con 100% de víveres, el monto para reparaciones queda en 0 ,
+            y la cuenta corriente queda con 2500 pesos." {
+		casaDePepeYJulian.porcentajeDeViveres(60)
+		casaDePepeYJulian.montoParaReparaciones(300)
+		casaDePepeYJulian.cuentaHogar(cuentaCorriente)
+		cuentaCorriente.depositarDinero(3000)
+		casaDePepeYJulian.estrategiaDeAhorro(full)
+		casaDePepeYJulian.hacerMantenimiento()
+		assert.equals(100, casaDePepeYJulian.porcentajeDeViveres())
+		assert.equals(0, casaDePepeYJulian.montoParaReparaciones())
+		assert.equals(2500, cuentaCorriente.saldo())
+	}
+	test "- La casa tiene 50% de los víveres.
+          - No necesita reparaciones.
+          - Tiene asociada la cuenta corriente con 3000 pesos de saldo.
+          - Una estrategia de ahorro _Full_.
+          Al hacer un mantenimiento de la casa:
+          - Como la casa esta en orden el porcentaje de viveres cambia a 100%, gastando
+            ´(100 -50) * 5 = 250´ pesos
+          - Verificar que la casa queda con 100% de víveres
+            y la cuenta corriente queda con 2750 pesos." {
+		casaDePepeYJulian.porcentajeDeViveres(50)
+		casaDePepeYJulian.cuentaHogar(cuentaCorriente)
+		cuentaCorriente.depositarDinero(3000)
+		casaDePepeYJulian.estrategiaDeAhorro(full)
+		casaDePepeYJulian.hacerMantenimiento()
+		assert.equals(100, casaDePepeYJulian.porcentajeDeViveres())
+		assert.equals(2750, cuentaCorriente.saldo())
+	}
+
+}
+
