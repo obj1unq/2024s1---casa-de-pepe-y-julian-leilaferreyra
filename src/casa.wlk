@@ -1,8 +1,8 @@
 object casaDePepeYJulian {
 
-	var property porcentajeDeViveres = 0
+	var property porcentajeDeViveres = 50
 	const porcentajeMinimoDeViveres = 40
-	var calidadDeViveres = 0
+	var property calidadDeViveres = 0
 	var property montoParaReparaciones = 0
 	var cuentaHogar = cuentaCorriente
 	var estrategiaDeAhorro = minimoEIndispensable
@@ -24,7 +24,7 @@ object casaDePepeYJulian {
 	}
 
 	method hacerMantenimiento() {
-		estrategiaDeAhorro.mantenimiento(self, calidadDeViveres)
+		estrategiaDeAhorro.mantenimiento(self)
 	}
 
 	method cubrirGastos(monto) {
@@ -58,9 +58,13 @@ object minimoEIndispensable {
 
 	const porcentajeMinimoDeViveres = 40
 
-	method mantenimiento(casa, calidad) {
-		casa.cubrirGastos(self.viveresFaltantes(casa) * calidad)
+	method mantenimiento(casa) {
+		casa.cubrirGastos(self.presupuestoDeMantenimiento(casa))
 		casa.porcentajeDeViveres(porcentajeMinimoDeViveres)
+	}
+
+	method presupuestoDeMantenimiento(casa) {
+		return self.viveresFaltantes(casa) * casa.calidadDeViveres()
 	}
 
 	method viveresFaltantes(casa) {
@@ -74,18 +78,34 @@ object full {
 	const calidadFull = 5
 	const porcentajeMaximoDeViveres = 100
 
-	method mantenimiento(casa, calidad) {
+	method mantenimiento(casa) {
 		self.mantenimientoDeViveresFull(casa)
 		self.cubrirReparacionesSiSePuede(casa)
 	}
 
 	method mantenimientoDeViveresFull(casa) {
 		if (casa.laCasaEstaEnOrden()) {
-			casa.cubrirGastos(self.viveresFaltantes(casa) * calidadFull)
-			casa.porcentajeDeViveres(porcentajeMaximoDeViveres)
+			self.viveresAl100(casa)
 		} else {
-			casa.sumarAPorcentajeDeViveres(40)
-			casa.cubrirGastos(40 * calidadFull)
+			self.viveresMas40(casa)
+		}
+	}
+
+	method viveresAl100(casa) {
+		casa.cubrirGastos(self.presupuestoDeMantenimiento(casa))
+		casa.porcentajeDeViveres(porcentajeMaximoDeViveres)
+	}
+
+	method viveresMas40(casa) {
+		casa.cubrirGastos(self.presupuestoDeMantenimiento(casa))
+		casa.sumarAPorcentajeDeViveres(40)
+	}
+
+	method presupuestoDeMantenimiento(casa) {
+		return if (casa.laCasaEstaEnOrden()) {
+			self.viveresFaltantes(casa) * calidadFull
+		} else {
+			40 * calidadFull
 		}
 	}
 
@@ -139,7 +159,7 @@ object cuentaConGastos {
 	}
 
 	method depositarDinero(monto) {
-		saldo = saldo + monto - costoPorOperacion
+		saldo += (monto - costoPorOperacion)
 	}
 
 	method extraerDinero(monto) {
